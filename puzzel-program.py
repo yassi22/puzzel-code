@@ -95,8 +95,8 @@ column_dict = {"C1": (0, 7),
                "C3": (0, 2),
                "C4": (1, 2),
                "C5": (0, 1),
-               "C6": (1, 4),
-               "C7": (1, 5),
+               "C6": (1, 5),
+               "C7": (1, 4),
                "C8": (0, 5)}
 row_dict = {"R1": (1, 3),
             "R2": (1, 6),
@@ -208,42 +208,53 @@ pattern_numbers = [
 
 pattern_dolhof_2 = [
     "11111111",
-    "10000001",
+    "12000001",
     "10111101",
     "10000101",
     "00110000",
     "10101101",
-    "10000001",
+    "10000003",
     "11111111",
 ]  
 
  
 pattern_dolhof_3 = [
     "11111111",
-    "10001000",
+    "12001000",
     "10110101",
     "10100001",
     "10101101",
-    "10100101",
-    "00010101",
+    "10101101",
+    "00000103",
     "11111111",
 ] 
 
 
 pattern_dolhof_4 = [
     "11111111",
-    "10001000",
+    "12001000",
     "10110101",
     "10100001",
     "10101101",
-    "10100101",
-    "00010101",
+    "10101101",
+    "00000103",
     "11111111",
 ]
 
 
 # patroon wat gebruikt om de doolhof te laten zien.
 pattern_dolhof = [
+    "11111111",
+    "12000001",
+    "10111011",
+    "10100011",
+    "10101111",
+    "10100011",
+    "10001003",
+    "11111111",
+]
+
+pattern_dolhof_1 = [
     "11111111",
     "12000001",
     "10111011",
@@ -260,28 +271,29 @@ print(pattern_dolhof)
 def find_2_change_to_1(list_with_strings):
     return [line.replace("2", "1") for line in list_with_strings]
 
-def find_end_change_3_to_0(list_with_string): 
-    return [line.replace("3", "0") for line in list_with_string]
+def find_end_change_3_to_0(list_with_strings): 
+    return [line.replace("3", "0") for line in list_with_strings]
 
 #de dolhof aanpassen dat de player telkens geupdate word doormiddel van de movments.
 def setup_code(dolhof):
     pattern_dolhof_ivan_code  = copy.deepcopy(dolhof)
-    pattern_end_dolhof_code = find_end_change_3_to_0(pattern_dolhof_ivan_code)
-    pattern_dolhof_ivan_code = find_2_change_to_1(pattern_dolhof_ivan_code), find_end_change_3_to_0(pattern_dolhof_ivan_code)
-    return pattern_dolhof_ivan_code
+    pattern_end_dolhof_code = find_end_change_3_to_0(pattern_dolhof_ivan_code) 
+    pattern_dolhof_ivan_code_final = find_2_change_to_1(pattern_end_dolhof_code) 
+    return pattern_dolhof_ivan_code_final
 
 
 #player position start
 start_row = 1
 start_col = 1
-pattern_dolhof[start_row] = pattern_dolhof[start_row][:start_col] + '2' + pattern_dolhof[start_row][start_col + 1:]
+pattern_dolhof[start_row] = pattern_dolhof[start_row][:start_col] + '2' + pattern_dolhof[start_row][start_col + 1:] 
+
 
 #endpoint in dolhof
  
-end_row = 7
-end_col = 8
-pattern_dolhof[end_row] = pattern_dolhof[end_row][end_col:] + pattern_dolhof[start_row][start_col + 1:]
-print(pattern_dolhof[end_row])
+end_row = 6
+end_col = 7
+pattern_dolhof[end_row] = pattern_dolhof[end_row][:end_col] + '3' +pattern_dolhof[end_row][end_col + 1:]
+
 
 
 #print het patteroon uit van het dolhof op het scherm ps(dit kan later uit).
@@ -293,39 +305,144 @@ def print_pattern():
 def find_cursor_position():
     for i, row in enumerate(pattern_dolhof):
         if '2' in row:
+            print(i,row.index('2'))
             return i, row.index('2')
 
 # find de end point op de dolhof
 def find_end_position(): 
+    global pattern_dolhof 
     for i, row in enumerate(pattern_dolhof): 
-        if '3' in row: 
-            return i, row.index('3')
+        if '3' in row:  
+            print(i,row.index('3'))
+            return i, row.index('3') 
+        
+END_POSITION_X, END_POSITION_Y = find_end_position()
+level = 0
+
+
+level1_reset = copy.deepcopy(pattern_dolhof_1)
+level2_reset = copy.deepcopy(pattern_dolhof_2)
+level3_reset = copy.deepcopy(pattern_dolhof_3)
+level4_reset = copy.deepcopy(pattern_dolhof_4)
+
+
+
+def check_if_won(x,y):
+    global END_POSITION_X
+    global END_POSITION_Y
+    global pattern_dolhof_1
+    global pattern_dolhof_2
+    global pattern_dolhof_3
+    global pattern_dolhof_4 
+    global level1_reset 
+    global level2_reset 
+    global level3_reset
+    global level4_reset
+
+    if (x == END_POSITION_X) and (y == END_POSITION_Y):
+        global pattern_dolhof 
+        global level
+        if level == 0:
+            pattern_dolhof  = pattern_dolhof_2 
+            level += 1 
+        elif level == 1:
+            pattern_dolhof = pattern_dolhof_3
+            level += 1
+        elif level == 2: 
+            pattern_dolhof = pattern_dolhof_4 
+            level +=1
+        elif level == 3: 
+            print("won")
+            for number in pattern_numbers:
+                time.sleep(1)
+                print(number)
+                pattern_dolhof = number
+
+            time.sleep(3)
+            level = 0
+            pattern_dolhof_1 = copy.deepcopy(level1_reset)
+            pattern_dolhof_2 = copy.deepcopy(level2_reset)
+            pattern_dolhof_3 = copy.deepcopy(level3_reset)
+            pattern_dolhof_4 = copy.deepcopy(level4_reset)
+            pattern_dolhof = pattern_dolhof_1
+            
+
+
+ 
+        print(pattern_dolhof)
+        END_POSITION_X, END_POSITION_Y = find_end_position()
+
+
+
 
 # het bewegen van de player 
 def move_cursor(direction):
     current_row, current_col = find_cursor_position()
-    end_row, end_col = find_end_position()
+    end_row, end_col = END_POSITION_X, END_POSITION_Y
 
-    
     print("\n")
     print(f"direction is:{direction}") 
+
+    if direction == 17 :
+        next_postion_x = current_row - 1
+        next_postion_y = current_col
+
+        check_if_won(next_postion_x,next_postion_y)
+
+    elif direction == 22:
+        next_postion_x = current_row + 1
+        next_postion_y = current_col
+
+        check_if_won(next_postion_x, next_postion_y)
+
+    elif direction == 27:
+        next_postion_x = current_row 
+        next_postion_y = current_col - 1
+
+        check_if_won(next_postion_x, next_postion_y)
+
+
+    elif direction == 24:
+        next_postion_x = current_row 
+        next_postion_y = current_col + 1
+
+        check_if_won(next_postion_x, next_postion_y)
+
+
+
+
+
     #up
-    if direction == 17 and current_row > 0   and pattern_dolhof[current_row - 1][current_col] == '0':
+    if (direction == 17) and (current_row > 0) and (pattern_dolhof[current_row - 1][current_col] == '0'):
+        #check here if you won
+     
+
         pattern_dolhof[current_row] = pattern_dolhof[current_row][:current_col] + '0' + pattern_dolhof[current_row][current_col + 1:]
         pattern_dolhof[current_row - 1] = pattern_dolhof[current_row - 1][:current_col] + '2' + pattern_dolhof[current_row - 1][current_col + 1:]
 
     #down
     elif direction == 22 and current_row < len(pattern_dolhof) - 1 and pattern_dolhof[current_row + 1][current_col] == '0':
+
+       
+
+
         pattern_dolhof[current_row] = pattern_dolhof[current_row][:current_col] + '0' + pattern_dolhof[current_row][current_col + 1:]
         pattern_dolhof[current_row + 1] = pattern_dolhof[current_row + 1][:current_col] + '2' + pattern_dolhof[current_row + 1][current_col + 1:]
     #left
     elif direction == 27 and current_col > 0 and pattern_dolhof[current_row][current_col - 1] == '0':
 
+        
+
         pattern_dolhof[current_row] = pattern_dolhof[current_row][:current_col - 1] + '2' + pattern_dolhof[current_row][current_col:]
         pattern_dolhof[current_row] = pattern_dolhof[current_row][:current_col] + '0' + pattern_dolhof[current_row][current_col + 1:]
     #right
     elif direction == 24 and current_col < len(pattern_dolhof[current_row]) - 1 and pattern_dolhof[current_row][current_col + 1] == '0':
-        pattern_dolhof[current_row] = pattern_dolhof[current_row][:current_col] + pattern_dolhof[current_row][current_col + 1] + '2' + pattern_dolhof[current_row][current_col + 2:]
+
+        
+        pattern_dolhof[current_row] = pattern_dolhof[current_row][:current_col] + pattern_dolhof[current_row][current_col + 1] + '2' + pattern_dolhof[current_row][current_col + 2:] 
+
+       
+
 
     if current_col == end_col and current_row == end_row: 
         print("YOU WON")
@@ -362,9 +479,10 @@ def patroon():
 
 
 try:
-    final_dolhof = setup_code(pattern_dolhof)
+    
     #for pattern in pattern_numbers:  
-    for i in range(200000):
+    while True:
+        final_dolhof = setup_code(pattern_dolhof)
         frame = create_from_any_list_with_strings_np_array(final_dolhof) 
         input_loader(cords_converter(frame)) 
 
